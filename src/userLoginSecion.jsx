@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useUser } from "./UserContext";
 
-const UserDropdown = ({ user, onLogout }) => {
+const UserDropdown = () => {
+    const { user, onLogout } = useUser();
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef();
 
@@ -40,9 +42,9 @@ const UserDropdown = ({ user, onLogout }) => {
                 <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-50">
                     <button
                         onClick={onLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                        Log out
+                        Logout
                     </button>
                 </div>
             )}
