@@ -21,7 +21,7 @@ const PropertyPrompter = () => {
       <div className="max-w-2xl mx-auto text-center">
         <h1 className="text-4xl font-extrabold mb-8 text-gray-800">What kind of property are you looking for?</h1>
         <div className="flex justify-center">
-          <div className="relative w-full md:w-3/4 lg:w-2/3">
+          <div className="relative w-full">
             <textarea
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
