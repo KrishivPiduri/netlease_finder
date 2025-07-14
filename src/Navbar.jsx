@@ -1,9 +1,21 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import UserLoginSecion from "./userLoginSecion.jsx";
 import { useUser } from "./UserContext";
 
 const Navbar = ({ currentPage, setCurrentPage }) => {
     const { savedProperties } = useUser();
+    const [hamburgerOpen, setHamburgerOpen] = useState(false);
+    const hamburgerRef = useRef();
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (hamburgerRef.current && !hamburgerRef.current.contains(e.target)) {
+                setHamburgerOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     return (
         <nav className="fixed top-0 left-0 w-full bg-white shadow-md z-50">
@@ -25,6 +37,39 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
                     </div>
                     <div className="cursor-pointer transition-all duration-200 relative px-6 h-full flex items-center hover:bg-gray-200">
                         <UserLoginSecion />
+                    </div>
+                    <div className="cursor-pointer transition-all duration-200 relative px-4 h-full flex items-center hover:bg-gray-200" ref={hamburgerRef}>
+                        <button
+                            className="flex flex-col justify-center items-center w-6 h-6 space-y-1"
+                            onClick={() => setHamburgerOpen(!hamburgerOpen)}
+                        >
+                            <div className="w-5 h-0.5 bg-gray-600"></div>
+                            <div className="w-5 h-0.5 bg-gray-600"></div>
+                            <div className="w-5 h-0.5 bg-gray-600"></div>
+                        </button>
+
+                        {hamburgerOpen && (
+                            <div className="absolute right-0 top-16 w-56 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
+                                <div className="py-2">
+                                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                                        Browse Properties
+                                    </button>
+                                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                                        Search Filters
+                                    </button>
+                                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                                        Property Alerts
+                                    </button>
+                                    <hr className="my-2 border-gray-200" />
+                                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                                        Help & Support
+                                    </button>
+                                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                                        Settings
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
