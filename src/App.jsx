@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Home from "./pages/Home";
 import SavedListings from "./SavedListings";
+ import Settings from "./pages/Settings";
 
 function App() {
     const location = useLocation();
@@ -12,6 +13,8 @@ function App() {
         switch(location.pathname) {
             case '/saved':
                 return 'saved';
+            case '/settings':
+                return 'settings';
             case '/':
             default:
                 return 'home';
@@ -25,6 +28,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/saved" element={<SavedListings />} />
+                    <Route path="/settings" element={<Settings />} />
                 </Routes>
             </main>
         </div>
