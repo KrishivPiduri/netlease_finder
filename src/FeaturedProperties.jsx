@@ -25,8 +25,8 @@ const featuredProperties = [
 ];
 
 const FeaturedProperties = () => (
-	<section className="max-w-4xl mx-auto py-16 px-4 bg-gradient-to-b from-blue-50 to-blue-100 rounded-2xl shadow-inner mt-12">
-		<h2 className="text-2xl font-semibold mb-6 text-blue-900">
+	<section className="max-w-4xl mx-auto py-16 px-4">
+		<h2 className="text-2xl font-semibold mb-6 text-gray-800">
 			Featured Properties
 		</h2>
 		<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -52,4 +52,3 @@ const FeaturedProperties = () => (
 );
 
 export default FeaturedProperties;
-
