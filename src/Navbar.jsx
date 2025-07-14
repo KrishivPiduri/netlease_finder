@@ -1,4 +1,5 @@
 import React from "react";
+import UserLoginSecion from "./userLoginSecion.jsx";
 
 const Navbar = () => {
     return (
@@ -7,6 +8,7 @@ const Navbar = () => {
                 <div className="text-xl font-bold">MySite</div>
                 <ul className="flex space-x-6">
                     <li className="hover:text-blue-600 cursor-pointer">Saved Listings</li>
+                    <UserLoginSecion user={{avatar: "https://www.w3schools.com/howto/img_avatar.png", firstName: "John", lastName: "Doe" }} />
                 </ul>
             </div>
         </nav>
