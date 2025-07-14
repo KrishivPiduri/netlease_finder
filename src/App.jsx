@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Home from "./pages/Home";
 import SavedListings from "./SavedListings";
- import Settings from "./pages/Settings";
+import Settings from "./pages/Settings";
 
 function App() {
     const location = useLocation();
