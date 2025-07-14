@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import UserLoginSecion from "./userLoginSecion.jsx";
 import { useUser } from "./UserContext";
 
-const Navbar = ({ currentPage, setCurrentPage }) => {
+const Navbar = ({ currentPage }) => {
     const { savedProperties } = useUser();
     const [hamburgerOpen, setHamburgerOpen] = useState(false);
     const hamburgerRef = useRef();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -22,16 +24,18 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
             <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
                 <div
                     className="text-xl text-blue-600 font-bold cursor-pointer hover:text-blue-800 transition-all duration-200 px-4 h-full flex items-center hover:bg-gray-200"
-                    onClick={() => setCurrentPage('home')}
+                    onClick={() => navigate('/')}
                 >
                     Netlease Finder
                 </div>
                 <div className="flex items-center h-full">
                     <div
-                        className={`cursor-pointer transition-all duration-200 relative px-6 h-full flex items-center hover:bg-gray-200 ${
-                            currentPage === 'saved' ? 'text-blue-600 font-medium bg-gray-200' : 'hover:text-blue-600'
+                        className={`cursor-pointer transition-all duration-200 relative px-6 h-full flex items-center ${
+                            currentPage === 'saved' 
+                                ? 'text-blue-600 font-medium bg-gray-200' 
+                                : 'hover:text-blue-600 hover:bg-gray-200'
                         }`}
-                        onClick={() => setCurrentPage('saved')}
+                        onClick={() => navigate('/saved')}
                     >
                         Saved Listings
                     </div>

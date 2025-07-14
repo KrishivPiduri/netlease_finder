@@ -1,32 +1,31 @@
-import React, { useState } from "react";
+import React from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
-import PropertyPrompter from "./PropertyPrompter";
-import FeaturedProperties from "./FeaturedProperties";
+import Home from "./pages/Home";
 import SavedListings from "./SavedListings";
 
 function App() {
-    const [currentPage, setCurrentPage] = useState('home');
+    const location = useLocation();
 
-    const renderPage = () => {
-        switch(currentPage) {
-            case 'saved':
-                return <SavedListings />;
-            case 'home':
+    // Determine current page based on URL path
+    const getCurrentPage = () => {
+        switch(location.pathname) {
+            case '/saved':
+                return 'saved';
+            case '/':
             default:
-                return (
-                    <>
-                        <PropertyPrompter />
-                        <FeaturedProperties />
-                    </>
-                );
+                return 'home';
         }
     };
 
     return (
         <div>
-            <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+            <Navbar currentPage={getCurrentPage()} />
             <main className="pt-20 px-4">
-                {renderPage()}
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/saved" element={<SavedListings />} />
+                </Routes>
             </main>
         </div>
     );
