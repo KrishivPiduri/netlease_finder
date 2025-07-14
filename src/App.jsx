@@ -1,14 +1,15 @@
 import React from "react";
 import Navbar from "./Navbar";
+import PropertyPrompter from "./PropertyPrompter";
+import FeaturedProperties from "./FeaturedProperties";
 
 function App() {
     return (
         <div>
             <Navbar />
             <main className="pt-20 px-4">
-                <p>Content goes here...</p>
-                {/* Add enough content to see the sticky effect */}
-                <div className="h-[2000px]" />
+                <PropertyPrompter />
+                <FeaturedProperties />
             </main>
         </div>
     );
