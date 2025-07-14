@@ -22,19 +22,24 @@ const PropertyPrompter = () => {
         <h1 className="text-4xl font-extrabold mb-8 text-gray-800">What kind of property are you looking for?</h1>
         <div className="flex justify-center">
           <div className="relative w-full">
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
+              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
             <textarea
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder="Search for properties..."
               rows={1}
-              className="w-full px-4 pr-12 py-3 text-base border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all duration-200 resize-none overflow-hidden"
-              style={{ minHeight: '48px' }}
+              className="w-full pl-14 pr-16 py-5 text-lg border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all duration-200 resize-none overflow-hidden"
+              style={{ minHeight: '64px' }}
               onInput={(e) => {
                 e.target.style.height = 'auto';
                 e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
               }}
             />
-            <button className="absolute right-2 top-3 w-8 h-8 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors duration-200 cursor-pointer">
+            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors duration-200 cursor-pointer">
               <svg
                 className="w-4 h-4 text-white"
                 fill="none"
