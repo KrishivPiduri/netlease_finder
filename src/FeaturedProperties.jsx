@@ -80,7 +80,7 @@ const PropertyCarousel = ({ images, alt }) => {
 				<>
 					<button
 						onClick={prevImage}
-						className="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
+						className="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors cursor-pointer"
 					>
 						<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -88,7 +88,7 @@ const PropertyCarousel = ({ images, alt }) => {
 					</button>
 					<button
 						onClick={nextImage}
-						className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
+						className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors cursor-pointer"
 					>
 						<svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -104,7 +104,7 @@ const PropertyCarousel = ({ images, alt }) => {
 						<button
 							key={index}
 							onClick={() => setCurrentImageIndex(index)}
-							className={`w-2 h-2 rounded-full transition-colors ${
+							className={`w-2 h-2 rounded-full transition-colors cursor-pointer ${
 								index === currentImageIndex ? 'bg-white' : 'bg-white/50'
 							}`}
 						/>
@@ -132,11 +132,11 @@ const FeaturedProperties = () => (
 
 						{/* Top Right Buttons */}
 						<div className="absolute top-3 right-3 flex flex-row gap-2 z-10">
-							<button className="px-3 py-1 bg-white text-blue-600 text-xs font-medium rounded border hover:bg-gray-50">
+							<button className="px-3 py-1 bg-white text-blue-600 text-xs font-medium rounded border hover:bg-blue-600 hover:text-white hover:shadow-md transition-all duration-200 cursor-pointer">
 								Register To Bid
 							</button>
-							<button className="w-8 h-8 bg-white rounded border flex items-center justify-center hover:bg-gray-50">
-								<svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<button className="w-8 h-8 bg-white rounded border flex items-center justify-center hover:bg-red-50 hover:shadow-md transition-all duration-200 group cursor-pointer">
+								<svg className="w-4 h-4 text-gray-600 group-hover:text-red-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
 								</svg>
 							</button>
@@ -165,7 +165,7 @@ const FeaturedProperties = () => (
 						{/* Price and Badge */}
 						<div className="flex items-center justify-between mb-2">
 							<span className="text-xl font-bold text-gray-900">{property.price}</span>
-							<span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded border border-blue-200">
+							<span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded border">
 								{property.priceType}
 							</span>
 						</div>
@@ -185,7 +185,7 @@ const FeaturedProperties = () => (
 						{/* Bottom Actions */}
 						<div className="flex items-center justify-between">
 							{property.hasOM && (
-								<button className="flex items-center gap-1 text-blue-600 text-sm hover:text-blue-800">
+								<button className="flex items-center gap-1 text-blue-600 text-sm hover:text-blue-800 cursor-pointer">
 									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
 									</svg>

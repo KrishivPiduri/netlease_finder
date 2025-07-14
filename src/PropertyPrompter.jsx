@@ -34,7 +34,7 @@ const PropertyPrompter = () => {
                 e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
               }}
             />
-            <button className="absolute right-2 top-3 w-8 h-8 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors duration-200">
+            <button className="absolute right-2 top-3 w-8 h-8 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors duration-200 cursor-pointer">
               <svg
                 className="w-4 h-4 text-white"
                 fill="none"
@@ -53,7 +53,7 @@ const PropertyPrompter = () => {
               <button
                 key={index}
                 onClick={() => handleRecommendationClick(recommendation)}
-                className="px-4 py-2 text-sm bg-gradient-to-r from-blue-50 to-indigo-50 border border-gray-200 rounded-full hover:from-blue-100 hover:to-indigo-100 hover:border-blue-500 hover:border-2 hover:shadow-lg hover:scale-105 hover:font-bold transition-all duration-200 text-gray-800 font-normal"
+                className="px-4 py-2 text-sm bg-gradient-to-r from-blue-50 to-indigo-50 border border-gray-200 rounded-full hover:from-blue-100 hover:to-indigo-100 hover:border-blue-500 hover:border-2 hover:shadow-lg hover:scale-105 hover:font-bold transition-all duration-200 text-gray-800 font-normal cursor-pointer"
               >
                 {recommendation}
               </button>
