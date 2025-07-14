@@ -14,7 +14,7 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
                 >
                     Netlease Finder
                 </div>
-                <div className="flex items-center h-full space-x-6">
+                <div className="flex items-center h-full">
                     <div
                         className={`cursor-pointer transition-all duration-200 relative px-6 h-full flex items-center hover:bg-gray-200 ${
                             currentPage === 'saved' ? 'text-blue-600 font-medium bg-gray-200' : 'hover:text-blue-600'
@@ -22,13 +22,8 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
                         onClick={() => setCurrentPage('saved')}
                     >
                         Saved Listings
-                        {savedProperties.length > 0 && (
-                            <span className="absolute top-2 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                                {savedProperties.length}
-                            </span>
-                        )}
                     </div>
-                    <div className="h-full flex items-center px-4">
+                    <div className="cursor-pointer transition-all duration-200 relative px-6 h-full flex items-center hover:bg-gray-200">
                         <UserLoginSecion />
                     </div>
                 </div>

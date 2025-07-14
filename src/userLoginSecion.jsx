@@ -25,11 +25,11 @@ const UserDropdown = () => {
                 <img
                     src={user.avatar}
                     alt="avatar"
-                    className="w-8 h-8 rounded-full object-cover"
+                    className="w-6 h-6 rounded-full object-cover"
                 />
-                <span className="text-sm font-medium">{user.firstName} {user.lastName}</span>
+                <span className="text-sm font-normal text-gray-600">{user.firstName} {user.lastName}</span>
                 <svg
-                    className="w-4 h-4 ml-1"
+                    className="w-3 h-3 text-gray-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -39,7 +39,7 @@ const UserDropdown = () => {
             </button>
 
             {open && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                     <button
                         onClick={onLogout}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
