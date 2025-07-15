@@ -1,102 +1,184 @@
+// ====================================================================
+// FILE: UserContext.jsx
+// LOCATION: /src/UserContext.jsx
+// PURPOSE: Global user state management and Clerk authentication integration
+// DESCRIPTION: React context for user data, settings, and saved properties
+// ====================================================================
+
+// React core imports for context creation and state management
 import React, { createContext, useContext, useState, useEffect } from "react";
+// Clerk authentication hook for accessing authenticated user data
 import { useUser as useClerkUser } from "@clerk/clerk-react";
 
+// ====================================================================
+// CONTEXT CREATION SECTION
+// LOCATION: Top of UserContext.jsx file
+// PURPOSE: Create React context for global user state
+// ====================================================================
+
+// React Context: Global user state container
+// USAGE: Provides user data, settings, and functions across entire application
 const UserContext = createContext();
 
+// ====================================================================
+// USER PROVIDER COMPONENT: UserProvider
+// PURPOSE: Context provider that manages all user-related state
+// LOCATION: Wraps entire application in main.jsx
+// PROPS: children - All application components that need user context
+// ====================================================================
 export const UserProvider = ({ children }) => {
-    const { user: clerkUser, isLoaded } = useClerkUser();
+    // ================================================================
+    // CLERK INTEGRATION SECTION
+    // LOCATION: Top of UserProvider component
+    // PURPOSE: Access Clerk authentication state and user data
+    // ================================================================
 
-    // Use Clerk user data when available, otherwise use default structure
-    const [user, setUser] = useState(null);
+    // Clerk user hook: Access authenticated user data and loading state
+    const { user: clerkUser, isLoaded, isSignedIn } = useClerkUser();
 
-    // Update user state when Clerk user data changes
-    useEffect(() => {
-        if (isLoaded && clerkUser) {
-            setUser({
-                firstName: clerkUser.firstName || "",
-                lastName: clerkUser.lastName || "",
-                avatar: clerkUser.imageUrl || "https://i.pravatar.cc/150?img=3",
-                email: clerkUser.primaryEmailAddress?.emailAddress || "",
-                phone: clerkUser.primaryPhoneNumber?.phoneNumber || "",
-                company: clerkUser.publicMetadata?.company || "",
-                title: clerkUser.publicMetadata?.title || ""
-            });
-        } else if (isLoaded && !clerkUser) {
-            setUser(null);
-        }
-    }, [clerkUser, isLoaded]);
+    // ================================================================
+    // SAVED PROPERTIES STATE SECTION
+    // LOCATION: After Clerk integration in UserProvider
+    // PURPOSE: Track user's bookmarked/saved properties
+    // NOTE: Removed redundant local user state - using Clerk user directly
+    // ================================================================
 
-    // Saved properties state
+    // State: Array of properties saved by the user
+    // USAGE: For saved listings page and bookmark functionality
     const [savedProperties, setSavedProperties] = useState([]);
 
-    // Settings state
+    // ================================================================
+    // USER SETTINGS STATE SECTION
+    // LOCATION: After saved properties state
+    // PURPOSE: Manage user preferences and application settings
+    // NOTE: Settings are user-specific and persist in localStorage with user ID
+    // ================================================================
+
+    // State: User settings with localStorage persistence per user
+    // INITIALIZATION: Load from localStorage using user ID or use defaults
     const [settings, setSettings] = useState(() => {
-        // Try to load settings from localStorage
-        const savedSettings = localStorage.getItem('userSettings');
-        return savedSettings ? JSON.parse(savedSettings) : {
-            emailNotifications: true,
-            propertyAlerts: true,
-            marketingEmails: false,
-            darkMode: false,
-            language: 'en',
-            currency: 'USD',
+        // Only load settings if user is authenticated
+        if (isSignedIn && clerkUser?.id) {
+            // Use user-specific localStorage key
+            const userSettingsKey = `userSettings_${clerkUser.id}`;
+            const savedSettings = localStorage.getItem(userSettingsKey);
+
+            if (savedSettings) {
+                return JSON.parse(savedSettings);
+            }
+        }
+
+        // Return default settings for new users or unauthenticated state
+        return {
+            // Notification preferences
+            emailNotifications: true, // Email notifications enabled by default
+            propertyAlerts: true, // Property alert notifications enabled
+            marketingEmails: false, // Marketing emails disabled by default
+
+            // UI preferences
+            darkMode: false, // Light mode by default
+            language: 'en', // English language default
+            currency: 'USD', // US Dollar currency default
+
+            // Search preferences
             priceRange: {
-                min: 0,
-                max: 10000000
+                min: 0, // Minimum price filter
+                max: 10000000 // Maximum price filter (10M)
             },
+
+            // Property type preferences
             preferredPropertyTypes: {
-                retail: true,
-                office: true,
-                industrial: false,
-                medical: false
+                retail: true, // Retail properties enabled
+                office: true, // Office properties enabled
+                industrial: false, // Industrial properties disabled
+                medical: false // Medical properties disabled
             }
         };
     });
 
-    // Save settings to localStorage whenever settings change
+    // ================================================================
+    // SETTINGS PERSISTENCE EFFECT
+    // LOCATION: After settings state declaration
+    // PURPOSE: Automatically save settings to localStorage when changed
+    // NOTE: Only save if user is authenticated
+    // ================================================================
+
+    // Effect: Save settings to localStorage whenever settings change
+    // TRIGGERS: Any change to the settings state object or user authentication
     useEffect(() => {
-        localStorage.setItem('userSettings', JSON.stringify(settings));
-    }, [settings]);
+        // Only persist settings if user is authenticated
+        if (isSignedIn && clerkUser?.id) {
+            const userSettingsKey = `userSettings_${clerkUser.id}`;
+            localStorage.setItem(userSettingsKey, JSON.stringify(settings));
+        }
+    }, [settings, isSignedIn, clerkUser?.id]); // Dependencies: settings, auth state, and user ID
 
-    const updateUser = (userData) => {
-        setUser(prev => ({ ...prev, ...userData }));
-        // You can also update Clerk user metadata here if needed
-    };
+    // ================================================================
+    // USER DATA MANAGEMENT FUNCTIONS SECTION
+    // LOCATION: After state declarations and effects
+    // PURPOSE: Provide functions to update settings (removed redundant user functions)
+    // ================================================================
 
+    // Function: Update entire settings object
+    // PURPOSE: Replace settings with new settings object
+    // PARAMS: newSettings - Complete or partial settings object
     const updateSettings = (newSettings) => {
-        setSettings(prev => ({ ...prev, ...newSettings }));
+        setSettings(prev => ({ ...prev, ...newSettings })); // Merge with existing settings
     };
 
+    // Function: Update individual setting value
+    // PURPOSE: Update specific setting with granular control
+    // PARAMS: category, setting, value - Nested setting path and new value
     const updateSetting = (category, setting, value) => {
+        // Handle nested price range settings
         if (category === 'priceRange') {
             setSettings(prev => ({
                 ...prev,
                 priceRange: {
                     ...prev.priceRange,
-                    [setting]: value
+                    [setting]: value // Update min or max price
                 }
             }));
-        } else if (category === 'propertyTypes') {
+        }
+        // Handle nested property type preferences
+        else if (category === 'propertyTypes') {
             setSettings(prev => ({
                 ...prev,
                 preferredPropertyTypes: {
                     ...prev.preferredPropertyTypes,
-                    [setting]: value
+                    [setting]: value // Update specific property type preference
                 }
             }));
-        } else {
+        }
+        // Handle top-level settings
+        else {
             setSettings(prev => ({
                 ...prev,
-                [setting]: value
+                [setting]: value // Update top-level setting
             }));
         }
     };
 
-    const onLogout = () => {
-        setUser(null);
-        setSavedProperties([]);
-        // Clear settings from localStorage on logout
-        localStorage.removeItem('userSettings');
+    // ================================================================
+    // USER SESSION MANAGEMENT FUNCTIONS SECTION
+    // LOCATION: After settings functions
+    // PURPOSE: Handle user authentication lifecycle events
+    // NOTE: Simplified to work with Clerk's authentication flow
+    // ================================================================
+
+    // Function: Handle user logout cleanup
+    // PURPOSE: Clear application data when user signs out
+    // NOTE: Clerk handles the actual authentication logout
+    const handleSignOut = () => {
+        setSavedProperties([]); // Clear saved properties
+
+        // Clear user-specific settings from localStorage
+        if (clerkUser?.id) {
+            const userSettingsKey = `userSettings_${clerkUser.id}`;
+            localStorage.removeItem(userSettingsKey);
+        }
+
+        // Reset settings to default values
         setSettings({
             emailNotifications: true,
             propertyAlerts: true,
@@ -115,43 +197,82 @@ export const UserProvider = ({ children }) => {
                 medical: false
             }
         });
-        // Clerk handles the actual logout
     };
 
+    // ================================================================
+    // PROPERTY MANAGEMENT FUNCTIONS SECTION
+    // LOCATION: After session management functions
+    // PURPOSE: Handle user's saved/bookmarked properties
+    // ================================================================
+
+    // Function: Toggle property saved status
+    // PURPOSE: Add or remove property from user's saved list
+    // PARAMS: property - Property object to save/unsave
     const saveProperty = (property) => {
+        // Only allow saving if user is authenticated
+        if (!isSignedIn) {
+            console.warn('User must be signed in to save properties');
+            return;
+        }
+
         setSavedProperties(prev => {
+            // Check if property is already saved
             if (prev.find(p => p.id === property.id)) {
-                // Property already saved, remove it
+                // Property already saved - remove it (unsave)
                 return prev.filter(p => p.id !== property.id);
             } else {
-                // Property not saved, add it
+                // Property not saved - add it to saved list
                 return [...prev, property];
             }
         });
     };
 
+    // Function: Check if property is saved
+    // PURPOSE: Determine if a property is in user's saved list
+    // PARAMS: propertyId - ID of property to check
+    // RETURNS: Boolean indicating if property is saved
     const isPropertySaved = (propertyId) => {
         return savedProperties.some(p => p.id === propertyId);
     };
 
+    // ================================================================
+    // CONTEXT PROVIDER RENDER SECTION
+    // LOCATION: Return statement of UserProvider
+    // PURPOSE: Provide all user-related state and functions to children
+    // ================================================================
     return (
+        // ============================================================
+        // USER CONTEXT PROVIDER: Makes user state available to all children
+        // VALUE: All user data, functions, and state for global access
+        // ============================================================
         <UserContext.Provider value={{
-            user,
-            clerkUser,
-            isLoaded,
-            setUser,
-            updateUser,
-            onLogout,
-            savedProperties,
-            saveProperty,
-            isPropertySaved,
-            settings,
-            updateSettings,
-            updateSetting
+            // Clerk authentication state (primary source of truth)
+            user: clerkUser, // Use Clerk user object directly
+            isLoaded, // Clerk loading state
+            isSignedIn, // Clerk authentication status
+
+            // Application-specific functionality
+            savedProperties, // Array of user's saved properties
+            saveProperty, // Function to save/unsave properties
+            isPropertySaved, // Function to check if property is saved
+
+            // Settings functionality
+            settings, // User settings object
+            updateSettings, // Function to update entire settings
+            updateSetting, // Function to update individual settings
+
+            // Session management
+            handleSignOut // Function to clean up on sign out
         }}>
-            {children}
+            {children} {/* Render all child components with context access */}
         </UserContext.Provider>
     );
-};
+}; // End of UserProvider component
 
+// ====================================================================
+// CUSTOM HOOK EXPORT: useUser
+// PURPOSE: Convenient hook to access user context in any component
+// LOCATION: Used throughout application for user state access
+// USAGE: const { user, settings, saveProperty } = useUser();
+// ====================================================================
 export const useUser = () => useContext(UserContext);
