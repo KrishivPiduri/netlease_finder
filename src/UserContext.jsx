@@ -1,18 +1,30 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useUser as useClerkUser } from "@clerk/clerk-react";
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-    // Example initial user state; replace with real auth logic as needed
-    const [user, setUser] = useState({
-        firstName: "John",
-        lastName: "Doe",
-        avatar: "https://i.pravatar.cc/150?img=3",
-        email: "john.doe@example.com",
-        phone: "",
-        company: "",
-        title: ""
-    });
+    const { user: clerkUser, isLoaded } = useClerkUser();
+
+    // Use Clerk user data when available, otherwise use default structure
+    const [user, setUser] = useState(null);
+
+    // Update user state when Clerk user data changes
+    useEffect(() => {
+        if (isLoaded && clerkUser) {
+            setUser({
+                firstName: clerkUser.firstName || "",
+                lastName: clerkUser.lastName || "",
+                avatar: clerkUser.imageUrl || "https://i.pravatar.cc/150?img=3",
+                email: clerkUser.primaryEmailAddress?.emailAddress || "",
+                phone: clerkUser.primaryPhoneNumber?.phoneNumber || "",
+                company: clerkUser.publicMetadata?.company || "",
+                title: clerkUser.publicMetadata?.title || ""
+            });
+        } else if (isLoaded && !clerkUser) {
+            setUser(null);
+        }
+    }, [clerkUser, isLoaded]);
 
     // Saved properties state
     const [savedProperties, setSavedProperties] = useState([]);
@@ -48,6 +60,7 @@ export const UserProvider = ({ children }) => {
 
     const updateUser = (userData) => {
         setUser(prev => ({ ...prev, ...userData }));
+        // You can also update Clerk user metadata here if needed
     };
 
     const updateSettings = (newSettings) => {
@@ -102,7 +115,7 @@ export const UserProvider = ({ children }) => {
                 medical: false
             }
         });
-        // Add additional logout logic here (e.g., clearing tokens)
+        // Clerk handles the actual logout
     };
 
     const saveProperty = (property) => {
@@ -124,6 +137,8 @@ export const UserProvider = ({ children }) => {
     return (
         <UserContext.Provider value={{
             user,
+            clerkUser,
+            isLoaded,
             setUser,
             updateUser,
             onLogout,

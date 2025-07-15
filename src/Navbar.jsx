@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import UserLoginSecion from "./userLoginSecion.jsx";
+import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 import { useUser } from "./UserContext";
 
 const Navbar = ({ currentPage }) => {
@@ -39,8 +39,33 @@ const Navbar = ({ currentPage }) => {
                     >
                         Saved Listings
                     </div>
-                    <div className="cursor-pointer transition-all duration-200 relative px-6 h-full flex items-center hover:bg-gray-200">
-                        <UserLoginSecion />
+                    <div className="transition-all duration-200 relative px-6 h-full flex items-center">
+                        <SignedIn>
+                            <UserButton
+                                appearance={{
+                                    elements: {
+                                        avatarBox: "w-8 h-8"
+                                    }
+                                }}
+                                afterSignOutUrl="/"
+                            />
+                        </SignedIn>
+                        <SignedOut>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => navigate('/sign-in')}
+                                    className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                >
+                                    Sign In
+                                </button>
+                                <button
+                                    onClick={() => navigate('/sign-up')}
+                                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 font-medium"
+                                >
+                                    Sign Up
+                                </button>
+                            </div>
+                        </SignedOut>
                     </div>
                     <div className="cursor-pointer transition-all duration-200 relative px-4 h-full flex items-center hover:bg-gray-200" ref={hamburgerRef}>
                         <button
