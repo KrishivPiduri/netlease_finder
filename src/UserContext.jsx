@@ -39,13 +39,34 @@ export const UserProvider = ({ children }) => {
     // ================================================================
     // SAVED PROPERTIES STATE SECTION
     // LOCATION: After Clerk integration in UserProvider
-    // PURPOSE: Track user's bookmarked/saved properties
+    // PURPOSE: Track user's bookmarked/saved properties with Clerk persistence
     // NOTE: Removed redundant local user state - using Clerk user directly
     // ================================================================
 
     // State: Array of properties saved by the user
     // USAGE: For saved listings page and bookmark functionality
     const [savedProperties, setSavedProperties] = useState([]);
+
+    // State: Loading state for saved properties operations
+    const [isSavingProperty, setIsSavingProperty] = useState(false);
+
+    // ================================================================
+    // LOAD SAVED PROPERTIES FROM CLERK EFFECT
+    // LOCATION: After saved properties state
+    // PURPOSE: Load saved properties from Clerk user metadata when user is authenticated
+    // ================================================================
+
+    // Effect: Load saved properties from Clerk user metadata
+    useEffect(() => {
+        if (isLoaded && isSignedIn && clerkUser) {
+            // Get saved properties from Clerk user's private metadata
+            const clerkSavedProperties = clerkUser.privateMetadata?.savedProperties || [];
+            setSavedProperties(clerkSavedProperties);
+        } else if (isLoaded && !isSignedIn) {
+            // Clear saved properties when user is not signed in
+            setSavedProperties([]);
+        }
+    }, [isLoaded, isSignedIn, clerkUser?.privateMetadata]);
 
     // ================================================================
     // USER SETTINGS STATE SECTION
@@ -202,29 +223,69 @@ export const UserProvider = ({ children }) => {
     // ================================================================
     // PROPERTY MANAGEMENT FUNCTIONS SECTION
     // LOCATION: After session management functions
-    // PURPOSE: Handle user's saved/bookmarked properties
+    // PURPOSE: Handle user's saved/bookmarked properties with Clerk persistence
     // ================================================================
 
-    // Function: Toggle property saved status
-    // PURPOSE: Add or remove property from user's saved list
+    // Function: Toggle property saved status with Clerk persistence
+    // PURPOSE: Add or remove property from user's saved list and sync with Clerk
     // PARAMS: property - Property object to save/unsave
-    const saveProperty = (property) => {
+    const saveProperty = async (property) => {
         // Only allow saving if user is authenticated
-        if (!isSignedIn) {
+        if (!isSignedIn || !clerkUser) {
             console.warn('User must be signed in to save properties');
             return;
         }
 
-        setSavedProperties(prev => {
+        setIsSavingProperty(true);
+
+        try {
+            // Get current saved properties from state
+            const currentSavedProperties = [...savedProperties];
+            let updatedSavedProperties;
+
             // Check if property is already saved
-            if (prev.find(p => p.id === property.id)) {
+            const existingPropertyIndex = currentSavedProperties.findIndex(p => p.id === property.id);
+
+            if (existingPropertyIndex > -1) {
                 // Property already saved - remove it (unsave)
-                return prev.filter(p => p.id !== property.id);
+                updatedSavedProperties = currentSavedProperties.filter(p => p.id !== property.id);
+                console.log('Property removed from saved list:', property.name);
             } else {
                 // Property not saved - add it to saved list
-                return [...prev, property];
+                // Add timestamp for when property was saved
+                const propertyWithTimestamp = {
+                    ...property,
+                    savedAt: new Date().toISOString()
+                };
+                updatedSavedProperties = [...currentSavedProperties, propertyWithTimestamp];
+                console.log('Property added to saved list:', property.name);
             }
-        });
+
+            // Update local state immediately for responsive UI
+            setSavedProperties(updatedSavedProperties);
+
+            // Update Clerk user's private metadata
+            await clerkUser.update({
+                privateMetadata: {
+                    ...clerkUser.privateMetadata,
+                    savedProperties: updatedSavedProperties
+                }
+            });
+
+            console.log('Saved properties synced with Clerk successfully');
+
+        } catch (error) {
+            console.error('Error saving property to Clerk:', error);
+
+            // Revert local state on error
+            const clerkSavedProperties = clerkUser.privateMetadata?.savedProperties || [];
+            setSavedProperties(clerkSavedProperties);
+
+            // TODO: Show user-friendly error message
+            alert('Failed to save property. Please try again.');
+        } finally {
+            setIsSavingProperty(false);
+        }
     };
 
     // Function: Check if property is saved
@@ -233,6 +294,42 @@ export const UserProvider = ({ children }) => {
     // RETURNS: Boolean indicating if property is saved
     const isPropertySaved = (propertyId) => {
         return savedProperties.some(p => p.id === propertyId);
+    };
+
+    // Function: Clear all saved properties
+    // PURPOSE: Remove all saved properties from user's account
+    const clearAllSavedProperties = async () => {
+        if (!isSignedIn || !clerkUser) {
+            console.warn('User must be signed in to clear saved properties');
+            return;
+        }
+
+        setIsSavingProperty(true);
+
+        try {
+            // Clear local state
+            setSavedProperties([]);
+
+            // Update Clerk user's private metadata
+            await clerkUser.update({
+                privateMetadata: {
+                    ...clerkUser.privateMetadata,
+                    savedProperties: []
+                }
+            });
+
+            console.log('All saved properties cleared from Clerk');
+        } catch (error) {
+            console.error('Error clearing saved properties from Clerk:', error);
+
+            // Revert local state on error
+            const clerkSavedProperties = clerkUser.privateMetadata?.savedProperties || [];
+            setSavedProperties(clerkSavedProperties);
+
+            alert('Failed to clear saved properties. Please try again.');
+        } finally {
+            setIsSavingProperty(false);
+        }
     };
 
     // ================================================================
@@ -252,9 +349,11 @@ export const UserProvider = ({ children }) => {
             isSignedIn, // Clerk authentication status
 
             // Application-specific functionality
-            savedProperties, // Array of user's saved properties
-            saveProperty, // Function to save/unsave properties
+            savedProperties, // Array of user's saved properties (from Clerk)
+            saveProperty, // Function to save/unsave properties (with Clerk sync)
             isPropertySaved, // Function to check if property is saved
+            clearAllSavedProperties, // Function to clear all saved properties
+            isSavingProperty, // Loading state for save operations
 
             // Settings functionality
             settings, // User settings object

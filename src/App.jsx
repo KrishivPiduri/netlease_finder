@@ -14,6 +14,7 @@ import Navbar from "./Navbar"; // Main navigation component
 import Home from "./pages/Home"; // Home page component
 import SavedListings from "./SavedListings"; // User's saved properties component
 import Settings from "./pages/Settings"; // User settings page component
+import SearchResults from "./pages/SearchResults"; // Import new SearchResults component
 // Authentication components from Clerk integration
 import { SignInPage, SignUpPage, ProtectedRoute } from "./ClerkAuth";
 
@@ -106,6 +107,9 @@ function App() {
 
                     {/* Route: Home page - Main landing and search interface */}
                     <Route path="/" element={<Home />} />
+
+                    {/* Route: Search results page - Display property search results */}
+                    <Route path="/search" element={<SearchResults />} />
 
                     {/* Route: Sign-in page - User authentication login */}
                     <Route path="/sign-in" element={<SignInPage />} />

@@ -207,18 +207,22 @@ export function AuthButton() {
           CONDITIONAL: Only rendered when user is not authenticated
           ======================================================== */}
       <SignedOut>
+        {/* ====================================================
+            SIGN-IN/UP LINK BUTTONS: Authentication action buttons
+            STYLING: Different styles for sign-in vs sign-up
+            ==================================================== */}
         <div className="flex gap-2">
           {/* Sign-in link - text style */}
           <a
             href="/sign-in"
-            className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
+            className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium cursor-pointer"
           >
             Sign In
           </a>
           {/* Sign-up link - filled button style */}
           <a
             href="/sign-up"
-            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 font-medium"
+            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 font-medium cursor-pointer"
           >
             Sign Up
           </a>

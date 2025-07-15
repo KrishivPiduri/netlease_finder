@@ -95,12 +95,11 @@ const PropertyPrompter = () => {
       setShowAIResponse(true);
 
       // Simulate AI processing with timeout
-      // TODO: Replace with actual AI/search API call
       setTimeout(() => {
         // Hide loading state after simulation
         setShowAIResponse(false);
-        // Placeholder for actual search implementation
-        console.log("Searching for:", searchValue);
+        // Navigate to search results page with query parameter
+        navigate(`/search?q=${encodeURIComponent(searchValue)}`);
       }, 2000); // 2 second simulation delay
     }
   };

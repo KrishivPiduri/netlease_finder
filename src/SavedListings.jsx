@@ -136,8 +136,47 @@ const SavedListings = () => {
 	// LOCATION: Top of SavedListings component
 	// ================================================================
 
-	// User context: Access saved properties and save/unsave function
-	const { savedProperties, saveProperty } = useUser();
+	// User context: Access saved properties and save/unsave function with loading states
+	const { savedProperties, saveProperty, isSavingProperty, clearAllSavedProperties, isLoaded, isSignedIn } = useUser();
+
+	// ================================================================
+	// LOADING STATE RENDER SECTION
+	// LOCATION: Early return for loading state
+	// PURPOSE: Show loading spinner while Clerk data is being loaded
+	// ================================================================
+	if (!isLoaded) {
+		return (
+			<section className="max-w-6xl mx-auto py-16 px-4">
+				<div className="text-center py-16">
+					<div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4"></div>
+					<p className="text-gray-600">Loading your saved properties...</p>
+				</div>
+			</section>
+		);
+	}
+
+	// ================================================================
+	// AUTHENTICATION CHECK SECTION
+	// LOCATION: After loading check
+	// PURPOSE: Redirect unauthenticated users
+	// ================================================================
+	if (!isSignedIn) {
+		return (
+			<section className="max-w-6xl mx-auto py-16 px-4">
+				<h1 className="text-3xl font-bold mb-8 text-gray-800">Saved Properties</h1>
+				<div className="text-center py-16">
+					<svg className="w-24 h-24 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+					</svg>
+					<h2 className="text-xl font-semibold text-gray-600 mb-2">Sign in required</h2>
+					<p className="text-gray-500 mb-4">Please sign in to view your saved properties.</p>
+					<a href="/sign-in" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer">
+						Sign In
+					</a>
+				</div>
+			</section>
+		);
+	}
 
 	// ================================================================
 	// EMPTY STATE RENDER SECTION
@@ -153,7 +192,9 @@ const SavedListings = () => {
 			<section className="max-w-6xl mx-auto py-16 px-4">
 
 				{/* Page title for empty state */}
-				<h1 className="text-3xl font-bold mb-8 text-gray-800">Saved Properties</h1>
+				<div className="flex items-center justify-between mb-8">
+					<h1 className="text-3xl font-bold text-gray-800">Saved Properties</h1>
+				</div>
 
 				{/* ====================================================
 					EMPTY STATE CONTENT: Message and illustration
@@ -170,7 +211,12 @@ const SavedListings = () => {
 					<h2 className="text-xl font-semibold text-gray-600 mb-2">No saved properties yet</h2>
 
 					{/* Empty state description with call-to-action */}
-					<p className="text-gray-500">Start browsing properties and save your favorites to see them here.</p>
+					<p className="text-gray-500 mb-4">Start browsing properties and save your favorites to see them here.</p>
+
+					{/* Link back to search */}
+					<a href="/" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 cursor-pointer">
+						Browse Properties
+					</a>
 				</div>
 			</section>
 		);
@@ -188,12 +234,37 @@ const SavedListings = () => {
 		<section className="max-w-6xl mx-auto py-16 px-4">
 
 			{/* ========================================================
-				PAGE HEADER: Title with property count
-				PURPOSE: Show page title and number of saved properties
+				PAGE HEADER: Title with property count and actions
+				PURPOSE: Show page title, count, and management options
 				======================================================== */}
-			<h1 className="text-3xl font-bold mb-8 text-gray-800">
-				Saved Properties ({savedProperties.length}) {/* Dynamic count */}
-			</h1>
+			<div className="flex items-center justify-between mb-8">
+				<h1 className="text-3xl font-bold text-gray-800">
+					Saved Properties ({savedProperties.length}) {/* Dynamic count */}
+				</h1>
+
+				{/* Clear all button */}
+				{savedProperties.length > 0 && (
+					<button
+						onClick={clearAllSavedProperties}
+						disabled={isSavingProperty}
+						className={`px-4 py-2 text-sm border border-red-300 text-red-600 rounded hover:bg-red-50 transition-colors cursor-pointer ${
+							isSavingProperty ? 'opacity-50 cursor-not-allowed' : ''
+						}`}
+					>
+						{isSavingProperty ? 'Clearing...' : 'Clear All'}
+					</button>
+				)}
+			</div>
+
+			{/* Global saving indicator */}
+			{isSavingProperty && (
+				<div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+					<div className="flex items-center gap-2 text-blue-700">
+						<div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+						<span className="text-sm">Syncing with your account...</span>
+					</div>
+				</div>
+			)}
 
 			{/* ========================================================
 				PROPERTIES GRID: Responsive grid layout for property cards
@@ -236,7 +307,10 @@ const SavedListings = () => {
 									==================================== */}
 								<button
 									onClick={() => saveProperty(property)} // Toggle saved state (remove)
-									className="w-8 h-8 bg-white rounded border border-red-300 flex items-center justify-center hover:bg-red-100 hover:shadow-md transition-all duration-200 group cursor-pointer"
+									disabled={isSavingProperty}
+									className={`w-8 h-8 bg-white rounded border border-red-300 flex items-center justify-center hover:bg-red-100 hover:shadow-md transition-all duration-200 group cursor-pointer ${
+										isSavingProperty ? 'opacity-50 cursor-not-allowed' : ''
+									}`}
 								>
 									{/* Filled heart icon (indicates property is saved) */}
 									<svg className="w-4 h-4 text-red-500 fill-red-500 transition-colors duration-200" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
@@ -244,6 +318,16 @@ const SavedListings = () => {
 									</svg>
 								</button>
 							</div>
+
+							{/* ========================================
+								SAVED TIMESTAMP: When property was saved
+								POSITION: Absolute top-left of image
+								======================================== */}
+							{property.savedAt && (
+								<div className="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded text-xs">
+									Saved {new Date(property.savedAt).toLocaleDateString()}
+								</div>
+							)}
 
 							{/* ========================================
 								PROPERTY BADGES: Category/feature tags
