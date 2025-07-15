@@ -1,5 +1,6 @@
 import React from 'react';
 import { ClerkProvider, SignIn, SignUp, SignedIn, SignedOut, UserButton, useUser } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
 
 // Import your publishable key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -9,8 +10,13 @@ if (!PUBLISHABLE_KEY) {
 }
 
 export function ClerkAuthProvider({ children }) {
+  const navigate = useNavigate();
+
   return (
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+    <ClerkProvider
+      publishableKey={PUBLISHABLE_KEY}
+      navigate={(to) => navigate(to)}
+    >
       {children}
     </ClerkProvider>
   );
@@ -30,10 +36,10 @@ export function SignInPage() {
           </p>
         </div>
         <SignIn
-          routing="path"
-          path="/sign-in"
-          redirectUrl="/"
+          routing="virtual"
+          signUpUrl="/sign-up"
           afterSignInUrl="/"
+          redirectUrl="/"
         />
       </div>
     </div>
@@ -53,10 +59,10 @@ export function SignUpPage() {
           </p>
         </div>
         <SignUp
-          routing="path"
-          path="/sign-up"
-          redirectUrl="/"
+          routing="virtual"
+          signInUrl="/sign-in"
           afterSignUpUrl="/"
+          redirectUrl="/"
         />
       </div>
     </div>
