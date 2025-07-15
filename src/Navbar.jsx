@@ -2,17 +2,15 @@
 // FILE: Navbar.jsx
 // LOCATION: /src/Navbar.jsx
 // PURPOSE: Main navigation bar component with authentication integration
-// DESCRIPTION: Fixed header navigation with user menu, auth buttons, and hamburger menu
+// DESCRIPTION: Fixed header navigation with user menu and auth buttons
 // ====================================================================
 
-// React core imports for component functionality and hooks
-import React, { useState, useRef, useEffect } from "react";
+// React core imports for component functionality
+import React from "react";
 // React Router navigation hook for programmatic routing
 import { useNavigate } from "react-router-dom";
 // Clerk authentication components for user state and UI elements
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
-// Custom user context hook for application-wide user data
-import { useUser } from "./UserContext";
 
 // ====================================================================
 // MAIN COMPONENT: Navbar
@@ -22,51 +20,13 @@ import { useUser } from "./UserContext";
 // ====================================================================
 const Navbar = ({ currentPage }) => {
     // ================================================================
-    // CONTEXT AND HOOKS SECTION
+    // HOOKS SECTION
     // LOCATION: Top of Navbar component
-    // PURPOSE: Access application state and navigation functionality
+    // PURPOSE: Access navigation functionality
     // ================================================================
-
-    // User context hook to access saved properties count and user data
-    const { savedProperties } = useUser();
 
     // React Router navigation hook for programmatic page navigation
     const navigate = useNavigate();
-
-    // ================================================================
-    // STATE MANAGEMENT SECTION
-    // LOCATION: After context hooks in Navbar component
-    // ================================================================
-
-    // State: Controls hamburger menu open/closed state
-    const [hamburgerOpen, setHamburgerOpen] = useState(false);
-
-    // Ref: Reference to hamburger menu container for click-outside detection
-    const hamburgerRef = useRef();
-
-    // ================================================================
-    // EFFECT HOOKS SECTION
-    // LOCATION: After state declarations in Navbar component
-    // PURPOSE: Handle side effects and event listeners
-    // ================================================================
-
-    // Effect: Handle clicks outside hamburger menu to close it
-    // PURPOSE: Improve UX by closing menu when user clicks elsewhere
-    useEffect(() => {
-        // Event handler: Close hamburger menu on outside clicks
-        const handleClickOutside = (e) => {
-            // Check if click is outside hamburger menu container
-            if (hamburgerRef.current && !hamburgerRef.current.contains(e.target)) {
-                setHamburgerOpen(false); // Close the menu
-            }
-        };
-
-        // Add event listener for document-wide mouse clicks
-        document.addEventListener("mousedown", handleClickOutside);
-
-        // Cleanup: Remove event listener on component unmount
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []); // Empty dependency array - run once on mount
 
     // ================================================================
     // COMPONENT RENDER SECTION
@@ -100,7 +60,7 @@ const Navbar = ({ currentPage }) => {
                 {/* ====================================================
                     NAVIGATION ITEMS SECTION: Right side navigation elements
                     LOCATION: Right side of navbar
-                    CONTAINS: Saved listings, user auth, hamburger menu
+                    CONTAINS: Saved listings and user auth
                     ==================================================== */}
                 <div className="flex items-center h-full">
 
@@ -152,102 +112,20 @@ const Navbar = ({ currentPage }) => {
                                 {/* Sign In button - text style */}
                                 <button
                                     onClick={() => navigate('/sign-in')} // Navigate to sign-in page
-                                    className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                                    className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 font-medium cursor-pointer"
                                 >
                                     Sign In
                                 </button>
                                 {/* Sign Up button - filled style for emphasis */}
                                 <button
                                     onClick={() => navigate('/sign-up')} // Navigate to sign-up page
-                                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 font-medium"
+                                    className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 font-medium cursor-pointer"
                                 >
                                     Sign Up
                                 </button>
                             </div>
                         </SignedOut>
                     </div>
-
-                    {/* ================================================
-                        HAMBURGER MENU SECTION: Additional navigation options
-                        LOCATION: Rightmost element in navbar
-                        FUNCTIONALITY: Dropdown menu with secondary navigation
-                        ================================================ */}
-                    <div className="cursor-pointer transition-all duration-200 relative px-4 h-full flex items-center hover:bg-gray-200" ref={hamburgerRef}>
-
-                        {/* ============================================
-                            HAMBURGER ICON BUTTON: Three-line menu icon
-                            FUNCTIONALITY: Toggle dropdown menu visibility
-                            ============================================ */}
-                        <button
-                            className="flex flex-col justify-center items-center w-6 h-6 space-y-1"
-                            onClick={() => setHamburgerOpen(!hamburgerOpen)} // Toggle menu state
-                        >
-                            {/* Three horizontal lines forming hamburger icon */}
-                            <div className="w-5 h-0.5 bg-gray-600"></div>
-                            <div className="w-5 h-0.5 bg-gray-600"></div>
-                            <div className="w-5 h-0.5 bg-gray-600"></div>
-                        </button>
-
-                        {/* ============================================
-                            HAMBURGER DROPDOWN MENU: Secondary navigation options
-                            CONDITIONAL: Only shown when hamburgerOpen is true
-                            POSITION: Absolute positioned below hamburger icon
-                            ============================================ */}
-                        {hamburgerOpen && (
-                            <div className="absolute right-0 top-16 w-56 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
-
-                                {/* ========================================
-                                    DROPDOWN MENU CONTENT: Navigation links and options
-                                    STYLING: Vertical list with hover effects
-                                    ======================================== */}
-                                <div className="py-2">
-
-                                    {/* ==================================
-                                        PLACEHOLDER MENU ITEMS: Future functionality
-                                        NOTE: These are not yet implemented
-                                        ================================== */}
-
-                                    {/* Browse Properties - placeholder for property browsing */}
-                                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                                        Browse Properties
-                                    </button>
-
-                                    {/* Search Filters - placeholder for advanced search */}
-                                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                                        Search Filters
-                                    </button>
-
-                                    {/* Property Alerts - placeholder for notification settings */}
-                                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                                        Property Alerts
-                                    </button>
-
-                                    {/* Divider line between menu sections */}
-                                    <hr className="my-2 border-gray-200" />
-
-                                    {/* Help & Support - placeholder for support functionality */}
-                                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-                                        Help & Support
-                                    </button>
-
-                                    {/* ==================================
-                                        SETTINGS MENU ITEM: Functional navigation to settings
-                                        FUNCTIONALITY: Navigate to settings page and close menu
-                                        ================================== */}
-                                    <button
-                                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                                        onClick={() => {
-                                            navigate('/settings'); // Navigate to settings page
-                                            setHamburgerOpen(false); // Close hamburger menu
-                                        }}
-                                    >
-                                        Settings
-                                    </button>
-
-                                </div> {/* End of dropdown menu content */}
-                            </div> // End of dropdown menu container
-                        )}
-                    </div> {/* End of hamburger menu section */}
                 </div> {/* End of navigation items section */}
             </div> {/* End of navbar content wrapper */}
         </nav> // End of main navbar container
