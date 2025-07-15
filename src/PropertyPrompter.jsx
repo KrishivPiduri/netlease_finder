@@ -1,13 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useUser as useClerkUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 
 const PropertyPrompter = () => {
   const [searchValue, setSearchValue] = useState("");
   const [showAIResponse, setShowAIResponse] = useState(false);
-  const [showSignInPrompt, setShowSignInPrompt] = useState(false);
-  const { isSignedIn } = useClerkUser();
+  const { isSignedIn, isLoaded } = useClerkUser();
   const navigate = useNavigate();
+
+  // Restore saved search query after sign in
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      const savedQuery = localStorage.getItem('pendingSearchQuery');
+      if (savedQuery) {
+        setSearchValue(savedQuery);
+        localStorage.removeItem('pendingSearchQuery');
+      }
+    }
+  }, [isSignedIn, isLoaded]);
 
   const aiResponses = [
     "I'm analyzing your requirements...",
@@ -20,7 +30,9 @@ const PropertyPrompter = () => {
   const handleSearch = () => {
     if (searchValue.trim()) {
       if (!isSignedIn) {
-        setShowSignInPrompt(true);
+        // Save the search query and redirect directly to sign in
+        localStorage.setItem('pendingSearchQuery', searchValue);
+        navigate('/sign-in');
         return;
       }
 
@@ -39,14 +51,6 @@ const PropertyPrompter = () => {
       e.preventDefault();
       handleSearch();
     }
-  };
-
-  const handleSignIn = () => {
-    navigate('/sign-in');
-  };
-
-  const closeSignInPrompt = () => {
-    setShowSignInPrompt(false);
   };
 
   return (
@@ -115,41 +119,6 @@ const PropertyPrompter = () => {
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
             </div>
             <p className="text-blue-700 mt-2">{aiResponses[Math.floor(Math.random() * aiResponses.length)]}</p>
-          </div>
-        )}
-
-        {/* Sign In Prompt Modal */}
-        {showSignInPrompt && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
-              <div className="text-center">
-                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
-                  <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Sign in to search properties
-                </h3>
-                <p className="text-sm text-gray-500 mb-6">
-                  Please sign in to use our AI-powered property search and save your preferences.
-                </p>
-                <div className="flex space-x-3">
-                  <button
-                    onClick={closeSignInPrompt}
-                    className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSignIn}
-                    className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Sign In
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
