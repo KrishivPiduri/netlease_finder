@@ -59,14 +59,14 @@ export const UserProvider = ({ children }) => {
     // Effect: Load saved properties from Clerk user metadata
     useEffect(() => {
         if (isLoaded && isSignedIn && clerkUser) {
-            // Get saved properties from Clerk user's private metadata
-            const clerkSavedProperties = clerkUser.privateMetadata?.savedProperties || [];
+            // Get saved properties from Clerk user's unsafe metadata
+            const clerkSavedProperties = clerkUser.unsafeMetadata?.savedProperties || [];
             setSavedProperties(clerkSavedProperties);
         } else if (isLoaded && !isSignedIn) {
             // Clear saved properties when user is not signed in
             setSavedProperties([]);
         }
-    }, [isLoaded, isSignedIn, clerkUser?.privateMetadata]);
+    }, [isLoaded, isSignedIn, clerkUser?.unsafeMetadata]);
 
     // ================================================================
     // USER SETTINGS STATE SECTION
@@ -264,10 +264,10 @@ export const UserProvider = ({ children }) => {
             // Update local state immediately for responsive UI
             setSavedProperties(updatedSavedProperties);
 
-            // Update Clerk user's private metadata
+            // Update Clerk user's private metadata using the correct method
             await clerkUser.update({
-                privateMetadata: {
-                    ...clerkUser.privateMetadata,
+                unsafeMetadata: {
+                    ...clerkUser.unsafeMetadata,
                     savedProperties: updatedSavedProperties
                 }
             });
@@ -278,7 +278,7 @@ export const UserProvider = ({ children }) => {
             console.error('Error saving property to Clerk:', error);
 
             // Revert local state on error
-            const clerkSavedProperties = clerkUser.privateMetadata?.savedProperties || [];
+            const clerkSavedProperties = clerkUser.unsafeMetadata?.savedProperties || [];
             setSavedProperties(clerkSavedProperties);
 
             // TODO: Show user-friendly error message
@@ -310,10 +310,10 @@ export const UserProvider = ({ children }) => {
             // Clear local state
             setSavedProperties([]);
 
-            // Update Clerk user's private metadata
+            // Update Clerk user's metadata using the correct method
             await clerkUser.update({
-                privateMetadata: {
-                    ...clerkUser.privateMetadata,
+                unsafeMetadata: {
+                    ...clerkUser.unsafeMetadata,
                     savedProperties: []
                 }
             });
@@ -323,7 +323,7 @@ export const UserProvider = ({ children }) => {
             console.error('Error clearing saved properties from Clerk:', error);
 
             // Revert local state on error
-            const clerkSavedProperties = clerkUser.privateMetadata?.savedProperties || [];
+            const clerkSavedProperties = clerkUser.unsafeMetadata?.savedProperties || [];
             setSavedProperties(clerkSavedProperties);
 
             alert('Failed to clear saved properties. Please try again.');
